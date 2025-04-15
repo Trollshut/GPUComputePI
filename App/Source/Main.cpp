@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <glm/glm.hpp>
 
+#define GLFW_INCLUDE_ES2
 #include <GLFW/glfw3.h>
 #include <glad/gles2.h> // ✅ GLAD 2 GLES include
 #include "Shader.h"
