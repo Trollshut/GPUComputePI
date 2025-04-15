@@ -42,6 +42,15 @@ int main()
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	
+	glfwWindowHint(GLFW_RED_BITS, 8);
+	glfwWindowHint(GLFW_GREEN_BITS, 8);
+	glfwWindowHint(GLFW_BLUE_BITS, 8);
+	glfwWindowHint(GLFW_ALPHA_BITS, 0);
+	glfwWindowHint(GLFW_DEPTH_BITS, 0);
+	glfwWindowHint(GLFW_STENCIL_BITS, 0);
+	glfwWindowHint(GLFW_SAMPLES, 0);
+
 
 	int width = 1280;
 	int height = 720;
@@ -67,10 +76,14 @@ int main()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
+	
+	io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines; // Optional
+	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+	io.BackendFlags &= ~ImGuiBackendFlags_RendererHasVtxOffset; // Avoids slow fallback paths
+	
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 300 es"); // GLES 3.0 shader version
+	ImGui_ImplOpenGL3_Init(nullptr); // Let it auto-pick
 
 	glfwSwapInterval(1);
 
