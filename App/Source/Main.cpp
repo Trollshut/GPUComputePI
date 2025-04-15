@@ -84,6 +84,8 @@ int main()
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 300 es"); // GLES 3.0 shader version
+	ImGui_ImplOpenGL3_CreateDeviceObjects();
+
 
 	glfwSwapInterval(1);
 
@@ -100,14 +102,14 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-		glfwGetFramebufferSize(window, &width, &height);
+		//glfwGetFramebufferSize(window, &width, &height);
 		glViewport(0, 0, width, height);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Render red quad
-		//shader.Bind();
-		//renderer.RenderQuad();
+		shader.Bind();
+		renderer.RenderQuad();
 
 		// Start ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -115,7 +117,7 @@ int main()
 
 		ImGui::NewFrame();
 		ImGui::Begin("Stats");
-		ImGui::Text("Hello from ImGui");
+		//ImGui::Text("Hello from ImGui");
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui::Text("FPS: %.1f", io.Framerate);
 		ImGui::End();
