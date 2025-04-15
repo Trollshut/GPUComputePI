@@ -61,7 +61,7 @@ int main()
 	return -1;
 	}
 
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 
 	// Setup Dear ImGui
 	IMGUI_CHECKVERSION();
