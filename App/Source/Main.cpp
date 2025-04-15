@@ -93,32 +93,31 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Render red quad
-		shader.Bind();
-		renderer.RenderQuad();
+		//shader.Bind();
+		//renderer.RenderQuad();
 
 		// Start ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		static bool showDemo = true;
-		ImGui::Begin("Settings");
-		ImGui::Text("Test for rendering information");
-		ImGui::End();
-
+		ImGui::NewFrame();
+		ImGui::Begin("Stats");
+		ImGui::Text("Hello from ImGui");
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui::Text("FPS: %.1f", io.Framerate);
+		ImGui::End();
 
 
 
 		// Render ImGui
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		auto frameStart = std::chrono::steady_clock::now();
+		glFinish();
+		//auto frameStart = std::chrono::steady_clock::now();
 		glfwSwapBuffers(window);
-		auto frameEnd = std::chrono::steady_clock::now();
-		std::this_thread::sleep_until(frameStart + std::chrono::milliseconds(33));
+		//auto frameEnd = std::chrono::steady_clock::now();
+		//std::this_thread::sleep_until(frameStart + std::chrono::milliseconds(33));
 
 	}
 
