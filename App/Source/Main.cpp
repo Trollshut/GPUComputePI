@@ -4,7 +4,12 @@
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include <glad/gles2.h> // ✅ GLAD 2 GLES include
+#include <glad/gles2.h> 
+
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+
 #include "Shader.h"
 #include "Renderer.h"
 
@@ -47,6 +52,23 @@ int main()
 
 	glfwSetKeyCallback(window, KeyCallback);
 	glfwMakeContextCurrent(window);
+	
+	if (!gladLoadGLES2((GLADloadfunc)glfwGetProcAddress)) {
+	std::cerr << "Failed to initialize GLAD" << std::endl;
+	return -1;
+	}
+
+	glfwSwapInterval(1);
+
+	// Setup Dear ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 300 es"); // GLES 3.0 shader version
+
 
 	// ✅ Correct GLAD 2 function call
 	if (!gladLoadGLES2((GLADloadfunc)glfwGetProcAddress))
@@ -69,19 +91,38 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
+		glfwPollEvents();
+		glfwGetFramebufferSize(window, &width, &height);
 		glViewport(0, 0, width, height);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// Render red quad
 		shader.Bind();
 		renderer.RenderQuad();
 
+		// Start ImGui frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		// Simple UI
+		ImGui::Begin("Hello, Pi!");
+		ImGui::Text("Dear ImGui on Raspberry Pi 4");
+		ImGui::End();
+
+		// Render ImGui
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		glfwSwapBuffers(window);
-		glfwPollEvents();
-		glfwGetFramebufferSize(window, &width, &height);
 	}
 
+
 	renderer.Shutdown();
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
