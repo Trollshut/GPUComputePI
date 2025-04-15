@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include <GLFW/glfw3.h>
+#include <glad/gles2.h> // ✅ GLAD 2 GLES include
 #include "Shader.h"
 #include "Renderer.h"
 
@@ -44,7 +45,14 @@ int main()
 
 	glfwSetKeyCallback(window, KeyCallback);
 	glfwMakeContextCurrent(window);
-	gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress);
+
+	// ✅ Correct GLAD 2 function call
+	if (!gladLoadGLES2((GLADloadfunc)glfwGetProcAddress))
+	{
+		std::cerr << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
+
 	glfwSwapInterval(1);
 
 	Shader shader;
