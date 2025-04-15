@@ -13,6 +13,9 @@
 #include "Shader.h"
 #include "Renderer.h"
 
+#include <chrono>
+#include <thread>
+
 static const std::filesystem::path s_ShaderDir = "../../App/Shaders";
 static const std::filesystem::path s_VertexShaderPath   = s_ShaderDir / "Rectangle.vert";
 static const std::filesystem::path s_FragmentShaderPath = s_ShaderDir / "Rectangle.frag";
@@ -106,13 +109,25 @@ int main()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::ShowDemoWindow();
+		static bool showDemo = true;
+		ImGui::Begin("Settings");
+		ImGui::Checkbox("Show Demo Window", &showDemo);
+		ImGui::End();
+
+		if (showDemo)
+			ImGui::ShowDemoWindow(&showDemo);
+
+		ImGui::ShowMetricsWindow();
+
 
 		// Render ImGui
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(33));
+
 	}
 
 
