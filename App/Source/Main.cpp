@@ -72,14 +72,6 @@ int main()
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 300 es"); // GLES 3.0 shader version
 
-
-	// ✅ Correct GLAD 2 function call
-	if (!gladLoadGLES2((GLADloadfunc)glfwGetProcAddress))
-	{
-		std::cerr << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
-
 	glfwSwapInterval(1);
 
 	Shader shader;
@@ -115,15 +107,20 @@ int main()
 		ImGui::End();
 
 		ImGui::ShowMetricsWindow();
+		
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui::Text("FPS: %.1f", io.Framerate);
+
 
 
 		// Render ImGui
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+		auto frameStart = std::chrono::steady_clock::now();
 		glfwSwapBuffers(window);
-		
-		std::this_thread::sleep_for(std::chrono::milliseconds(33));
+		auto frameEnd = std::chrono::steady_clock::now();
+		std::this_thread::sleep_until(frameStart + std::chrono::milliseconds(33));
 
 	}
 
