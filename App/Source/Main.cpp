@@ -122,7 +122,7 @@ int main()
 		ImGui::Text("FPS: %.1f", io.Framerate);
 		ImGui::End();
 
-		ImGui::ShowDemoWindow():
+		ImGui::ShowDemoWindow();
 
 		// Render ImGui
 		ImGui::Render();
