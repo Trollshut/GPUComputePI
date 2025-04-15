@@ -41,9 +41,9 @@ if (NOT glad_POPULATED)
     FetchContent_Populate(glad)
 
     add_subdirectory("${glad_SOURCE_DIR}/cmake" glad_cmake)
-    glad_add_library(glad REPRODUCIBLE EXCLUDE_FROM_ALL
-        LOADER API gles2=3.0
-    )
+	glad_add_library(glad REPRODUCIBLE EXCLUDE_FROM_ALL
+		LOADER API gles2=3.0 egl=1.5
+	)
 endif()
 set_target_properties(glad PROPERTIES FOLDER "Dependencies")
 
