@@ -106,10 +106,7 @@ int main()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// Simple UI
-		ImGui::Begin("Hello, Pi!");
-		ImGui::Text("Dear ImGui on Raspberry Pi 4");
-		ImGui::End();
+		ImGui::ShowDemoWindow();
 
 		// Render ImGui
 		ImGui::Render();
