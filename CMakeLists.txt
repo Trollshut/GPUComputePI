@@ -60,5 +60,44 @@ if (NOT glm_POPULATED)
 endif()
 set_target_properties(glm PROPERTIES FOLDER "Dependencies")
 
+# ImGui
+FetchContent_Declare(
+    imgui
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/ocornut/imgui/archive/refs/tags/v1.90.4.zip
+)
+FetchContent_GetProperties(imgui)
+if (NOT imgui_POPULATED)
+    FetchContent_Populate(imgui)
+
+    set(IMGUI_SRC_DIR ${imgui_SOURCE_DIR})
+
+    add_library(imgui
+        ${IMGUI_SRC_DIR}/imgui.cpp
+        ${IMGUI_SRC_DIR}/imgui_draw.cpp
+        ${IMGUI_SRC_DIR}/imgui_tables.cpp
+        ${IMGUI_SRC_DIR}/imgui_widgets.cpp
+        ${IMGUI_SRC_DIR}/imgui_demo.cpp
+    )
+
+	add_library(imgui_impl
+    ${IMGUI_SRC_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_SRC_DIR}/backends/imgui_impl_opengl3.cpp
+	)
+
+	target_include_directories(imgui_impl PUBLIC
+		${IMGUI_SRC_DIR}
+		${IMGUI_SRC_DIR}/backends
+	)
+
+	target_link_libraries(imgui_impl PUBLIC imgui glfw glad)
+	set_target_properties(imgui_impl PROPERTIES FOLDER "Dependencies")
+
+
+    target_include_directories(imgui PUBLIC ${IMGUI_SRC_DIR})
+    set_target_properties(imgui PROPERTIES FOLDER "Dependencies")
+endif()
+
+
 # Projects
 add_subdirectory(App)

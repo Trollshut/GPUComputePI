@@ -17,9 +17,5 @@ add_executable(App ${SOURCES})
 target_link_libraries(App PRIVATE glfw glad glm)
 
 # Link EGL and GLESv2 (for Raspberry Pi OpenGL ES 3.0 runtime)
-target_link_libraries(App PRIVATE
-    EGL
-    GLESv2
-    dl
-    m
-)
+target_link_libraries(App PRIVATE glfw glad glm imgui imgui_impl)
+
