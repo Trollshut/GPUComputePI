@@ -29,7 +29,6 @@ if (NOT glfw3_POPULATED)
 endif()
 
 ## OpenGL ES 3.0 (find_package not used, GLAD handles it)
-# glad loader for GLES2 API (which includes 3.0 support)
 FetchContent_Declare(
     glad
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
@@ -39,11 +38,10 @@ FetchContent_Declare(
 FetchContent_GetProperties(glad)
 if (NOT glad_POPULATED)
     FetchContent_Populate(glad)
-
     add_subdirectory("${glad_SOURCE_DIR}/cmake" glad_cmake)
-	glad_add_library(glad REPRODUCIBLE EXCLUDE_FROM_ALL
-		LOADER API gles2=3.0 egl=1.5
-	)
+    glad_add_library(glad REPRODUCIBLE EXCLUDE_FROM_ALL
+        LOADER API gles2=3.0 egl=1.5
+    )
 endif()
 set_target_properties(glad PROPERTIES FOLDER "Dependencies")
 
@@ -60,11 +58,11 @@ if (NOT glm_POPULATED)
 endif()
 set_target_properties(glm PROPERTIES FOLDER "Dependencies")
 
-# ImGui
+# ImGui (docking branch)
 FetchContent_Declare(
     imgui
-    DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL https://github.com/ocornut/imgui/archive/refs/tags/v1.90.4.zip
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG docking
 )
 FetchContent_GetProperties(imgui)
 if (NOT imgui_POPULATED)
@@ -80,24 +78,22 @@ if (NOT imgui_POPULATED)
         ${IMGUI_SRC_DIR}/imgui_demo.cpp
     )
 
-	add_library(imgui_impl
-    ${IMGUI_SRC_DIR}/backends/imgui_impl_glfw.cpp
-    ${IMGUI_SRC_DIR}/backends/imgui_impl_opengl3.cpp
-	)
-
-	target_include_directories(imgui_impl PUBLIC
-		${IMGUI_SRC_DIR}
-		${IMGUI_SRC_DIR}/backends
-	)
-
-	target_link_libraries(imgui_impl PUBLIC imgui glfw glad)
-	set_target_properties(imgui_impl PROPERTIES FOLDER "Dependencies")
-
+    add_library(imgui_impl
+        ${IMGUI_SRC_DIR}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_SRC_DIR}/backends/imgui_impl_opengl3.cpp
+    )
 
     target_include_directories(imgui PUBLIC ${IMGUI_SRC_DIR})
-    set_target_properties(imgui PROPERTIES FOLDER "Dependencies")
-endif()
+    target_include_directories(imgui_impl PUBLIC
+        ${IMGUI_SRC_DIR}
+        ${IMGUI_SRC_DIR}/backends
+    )
 
+    target_link_libraries(imgui_impl PUBLIC imgui glfw glad)
+
+    set_target_properties(imgui PROPERTIES FOLDER "Dependencies")
+    set_target_properties(imgui_impl PROPERTIES FOLDER "Dependencies")
+endif()
 
 # Projects
 add_subdirectory(App)
