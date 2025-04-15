@@ -1,18 +1,25 @@
-
 # App
 
 set(SOURCE_DIR "Source")
 
 set(SOURCES
-    Source/Main.cpp
-    Source/Shader.h
-    Source/Shader.cpp
-    Source/Renderer.h
-    Source/Renderer.cpp
+    ${SOURCE_DIR}/Main.cpp
+    ${SOURCE_DIR}/Shader.h
+    ${SOURCE_DIR}/Shader.cpp
+    ${SOURCE_DIR}/Renderer.h
+    ${SOURCE_DIR}/Renderer.cpp
 )
 
-# Add the executable target
+# Create the executable
 add_executable(App ${SOURCES})
-target_link_libraries(App glfw)
-target_link_libraries(App glad)
-target_link_libraries(App glm)
+
+# Link dependencies
+target_link_libraries(App PRIVATE glfw glad glm)
+
+# Link EGL and GLESv2 (for Raspberry Pi OpenGL ES 3.0 runtime)
+target_link_libraries(App PRIVATE
+    EGL
+    GLESv2
+    dl
+    m
+)

@@ -1,23 +1,28 @@
 #pragma once
 
-#include <glad/gl.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include <cstdint>
 
 struct Texture
 {
-	GLuint Handle = 0;
-	uint32_t Width = 0;
-	uint32_t Height = 0;
+	uint32_t Handle = 0;
+	int Width = 0;
+	int Height = 0;
 };
 
 struct Framebuffer
 {
-	GLuint Handle = 0;
+	uint32_t Handle = 0;
 	Texture ColorAttachment;
 };
 
-Texture CreateTexture(int width, int height);
-Framebuffer CreateFramebufferWithTexture(const Texture texture);
-bool AttachTextureToFramebuffer(Framebuffer& framebuffer, const Texture texture);
-void BlitFramebufferToSwapchain(const Framebuffer framebuffer);
+class Renderer
+{
+public:
+	void Initialize();
+	void RenderQuad();
+	void Shutdown();
+
+private:
+	uint32_t m_VAO = 0;
+	uint32_t m_VBO = 0;
+};

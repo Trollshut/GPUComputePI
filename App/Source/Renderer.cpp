@@ -1,61 +1,44 @@
 #include "Renderer.h"
 
+#include <glad/gles2.h>
 #include <iostream>
 
-Texture CreateTexture(int width, int height)
+void Renderer::Initialize()
 {
-	Texture result;
-	result.Width = width;
-	result.Height = height;
+	float quadVertices[] = {
+		// Positions   // TexCoords
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f,
+	};
 
-	glCreateTextures(GL_TEXTURE_2D, 1, &result.Handle);
+	glGenVertexArrays(1, &m_VAO);
+	glGenBuffers(1, &m_VBO);
 
-	glTextureStorage2D(result.Handle, 1, GL_RGBA32F, width, height);
+	glBindVertexArray(m_VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
-	glTextureParameteri(result.Handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteri(result.Handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
-	glTextureParameteri(result.Handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(result.Handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	return result;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
-Framebuffer CreateFramebufferWithTexture(const Texture texture)
+void Renderer::RenderQuad()
 {
-	Framebuffer result;
-
-	glCreateFramebuffers(1, &result.Handle);
-
-	if (!AttachTextureToFramebuffer(result, texture))
-	{
-		glDeleteFramebuffers(1, &result.Handle);
-		return {};
-	}
-
-	return result;
+	glBindVertexArray(m_VAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
 }
 
-bool AttachTextureToFramebuffer(Framebuffer& framebuffer, const Texture texture)
+void Renderer::Shutdown()
 {
-	glNamedFramebufferTexture(framebuffer.Handle, GL_COLOR_ATTACHMENT0, texture.Handle, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cerr << "Framebuffer is not complete!" << std::endl;
-		return false;
-	}
-
-	framebuffer.ColorAttachment = texture;
-	return true;
-}
-
-void BlitFramebufferToSwapchain(const Framebuffer framebuffer)
-{
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer.Handle);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // swapchain
-
-	glBlitFramebuffer(0, 0, framebuffer.ColorAttachment.Width, framebuffer.ColorAttachment.Height, // Source rect
-		0, 0, framebuffer.ColorAttachment.Width, framebuffer.ColorAttachment.Height,               // Destination rect
-		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glDeleteBuffers(1, &m_VBO);
+	glDeleteVertexArrays(1, &m_VAO);
 }

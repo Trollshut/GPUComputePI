@@ -1,81 +1,111 @@
 #include "Shader.h"
 
+#include <glad/gles2.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
-#include <glad/gl.h>
-
-uint32_t CreateComputeShader(const std::filesystem::path& path)
+Shader::Shader()
+    : m_ProgramID(0)
 {
-	std::ifstream file(path);
-
-	if (!file.is_open())
-	{
-		std::cerr << "Failed to open file: " << path.string() << std::endl;
-		return -1;
-	}
-
-	std::ostringstream contentStream;
-	contentStream << file.rdbuf();
-	std::string shaderSource = contentStream.str();
-
-	GLuint shaderHandle = glCreateShader(GL_COMPUTE_SHADER);
-
-	const GLchar* source = (const GLchar*)shaderSource.c_str();
-	glShaderSource(shaderHandle, 1, &source, 0);
-
-	glCompileShader(shaderHandle);
-
-	GLint isCompiled = 0;
-	glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &isCompiled);
-	if (isCompiled == GL_FALSE)
-	{
-		GLint maxLength = 0;
-		glGetShaderiv(shaderHandle, GL_INFO_LOG_LENGTH, &maxLength);
-
-		std::vector<GLchar> infoLog(maxLength);
-		glGetShaderInfoLog(shaderHandle, maxLength, &maxLength, &infoLog[0]);
-
-		std::cerr << infoLog.data() << std::endl;
-
-		glDeleteShader(shaderHandle);
-		return -1;
-	}
-
-	GLuint program = glCreateProgram();
-	glAttachShader(program, shaderHandle);
-	glLinkProgram(program);
-
-	GLint isLinked = 0;
-	glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
-	if (isLinked == GL_FALSE)
-	{
-		GLint maxLength = 0;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-
-		std::vector<GLchar> infoLog(maxLength);
-		glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
-		
-		std::cerr << infoLog.data() << std::endl;
-
-		glDeleteProgram(program);
-		glDeleteShader(shaderHandle);
-
-		return -1;
-	}
-
-	glDetachShader(program, shaderHandle);
-	return program;
 }
 
-uint32_t ReloadComputeShader(uint32_t shaderHandle, const std::filesystem::path& path)
+Shader::~Shader()
 {
-	uint32_t newShaderHandle = CreateComputeShader(path);
+    if (m_ProgramID)
+        glDeleteProgram(m_ProgramID);
+}
 
-	// Return old shader if compilation failed
-	if (newShaderHandle == -1)
-		return shaderHandle;
+bool Shader::Load(const std::string& vertexPath, const std::string& fragmentPath)
+{
+    std::string vertexSource = ReadFile(vertexPath);
+    std::string fragmentSource = ReadFile(fragmentPath);
 
-	glDeleteProgram(shaderHandle);
-	return newShaderHandle;
+    uint32_t vertexShader = CompileShader(GL_VERTEX_SHADER, vertexSource);
+    uint32_t fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentSource);
+
+    if (!vertexShader || !fragmentShader)
+        return false;
+
+    m_ProgramID = glCreateProgram();
+    glAttachShader(m_ProgramID, vertexShader);
+    glAttachShader(m_ProgramID, fragmentShader);
+    glLinkProgram(m_ProgramID);
+
+    GLint success = 0;
+    glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        GLint maxLength = 0;
+        glGetProgramiv(m_ProgramID, GL_INFO_LOG_LENGTH, &maxLength);
+
+        std::vector<GLchar> infoLog(maxLength);
+        glGetProgramInfoLog(m_ProgramID, maxLength, &maxLength, infoLog.data());
+
+        std::cerr << "Shader linking failed:\n" << infoLog.data() << std::endl;
+
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+        glDeleteProgram(m_ProgramID);
+        m_ProgramID = 0;
+
+        return false;
+    }
+
+    glDetachShader(m_ProgramID, vertexShader);
+    glDetachShader(m_ProgramID, fragmentShader);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return true;
+}
+
+void Shader::Bind() const
+{
+    glUseProgram(m_ProgramID);
+}
+
+void Shader::Unbind() const
+{
+    glUseProgram(0);
+}
+
+std::string Shader::ReadFile(const std::filesystem::path& path)
+{
+    std::ifstream file(path);
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open shader file: " << path << std::endl;
+        return "";
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+uint32_t Shader::CompileShader(uint32_t type, const std::string& source)
+{
+    uint32_t shader = glCreateShader(type);
+    const char* src = source.c_str();
+    glShaderSource(shader, 1, &src, nullptr);
+    glCompileShader(shader);
+
+    GLint success = 0;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        GLint maxLength = 0;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+        std::vector<GLchar> infoLog(maxLength);
+        glGetShaderInfoLog(shader, maxLength, &maxLength, infoLog.data());
+
+        std::cerr << "Shader compilation failed:\n" << infoLog.data() << std::endl;
+
+        glDeleteShader(shader);
+        return 0;
+    }
+
+    return shader;
 }

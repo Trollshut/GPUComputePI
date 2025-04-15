@@ -1,25 +1,23 @@
 #include <iostream>
-
+#include <filesystem>
 #include <glm/glm.hpp>
 
+#include <GLFW/glfw3.h>
 #include "Shader.h"
 #include "Renderer.h"
 
-static uint32_t s_ComputeShader = -1;
-static const std::filesystem::path s_ComputeShaderPath = "Shaders/Compute.glsl";
+static const std::filesystem::path s_VertexShaderPath   = "Shaders/Rectangle.vert";
+static const std::filesystem::path s_FragmentShaderPath = "Shaders/Rectangle.frag";
 
 static void ErrorCallback(int error, const char* description)
 {
-	std::cerr << "Error: " << description << std::endl;
+	std::cerr << "GLFW Error: " << description << std::endl;
 }
 
 static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
-
-	if (key == GLFW_KEY_R)
-		s_ComputeShader = ReloadComputeShader(s_ComputeShader, s_ComputeShaderPath);
 }
 
 int main()
@@ -27,76 +25,55 @@ int main()
 	glfwSetErrorCallback(ErrorCallback);
 
 	if (!glfwInit())
-		exit(EXIT_FAILURE);
+		return -1;
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
 	int width = 1280;
 	int height = 720;
 
-	GLFWwindow* window = glfwCreateWindow(width, height, "Compute", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Red Rectangle", nullptr, nullptr);
 	if (!window)
 	{
 		glfwTerminate();
-		exit(EXIT_FAILURE);
-	}
-
-	glfwSetKeyCallback(window, KeyCallback);
-
-	glfwMakeContextCurrent(window);
-	gladLoadGL(glfwGetProcAddress);
-	glfwSwapInterval(1);
-
-	s_ComputeShader = CreateComputeShader(s_ComputeShaderPath);
-	if (s_ComputeShader == -1)
-	{
-		std::cerr << "Compute shader failed\n";
 		return -1;
 	}
 
-	Texture computeShaderTexture = CreateTexture(width, height);
-	Framebuffer fb = CreateFramebufferWithTexture(computeShaderTexture);
-	
+	glfwSetKeyCallback(window, KeyCallback);
+	glfwMakeContextCurrent(window);
+	gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress);
+	glfwSwapInterval(1);
+
+	Shader shader;
+	if (!shader.Load(s_VertexShaderPath.string(), s_FragmentShaderPath.string()))
+	{
+		std::cerr << "Failed to load shaders\n";
+		return -1;
+	}
+
+	Renderer renderer;
+	renderer.Initialize();
+
 	while (!glfwWindowShouldClose(window))
 	{
-		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Resize texture
-		if (width != computeShaderTexture.Width || height != computeShaderTexture.Height)
-		{
-			glDeleteTextures(1, &computeShaderTexture.Handle);
-			computeShaderTexture = CreateTexture(width, height);
-			AttachTextureToFramebuffer(fb, computeShaderTexture);
-		}
-
-		// Compute
-		{
-			glUseProgram(s_ComputeShader);
-			glBindImageTexture(0, fb.ColorAttachment.Handle, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-
-			const GLuint workGroupSizeX = 16;
-			const GLuint workGroupSizeY = 16;
-
-			GLuint numGroupsX = (width + workGroupSizeX - 1) / workGroupSizeX;
-			GLuint numGroupsY = (height + workGroupSizeY - 1) / workGroupSizeY;
-
-			glDispatchCompute(numGroupsX, numGroupsY, 1);
-
-			// Ensure all writes to the image are complete
-			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-		}
-
-		// Blit
-		{
-			BlitFramebufferToSwapchain(fb);
-		}
+		shader.Bind();
+		renderer.RenderQuad();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		glfwGetFramebufferSize(window, &width, &height);
 	}
 
+	renderer.Shutdown();
 	glfwDestroyWindow(window);
-
 	glfwTerminate();
+
+	return 0;
 }
