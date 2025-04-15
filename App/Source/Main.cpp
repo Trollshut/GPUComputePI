@@ -106,8 +106,6 @@ int main()
 		ImGui::Text("Test for rendering information");
 		ImGui::End();
 
-		ImGui::ShowMetricsWindow();
-		
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui::Text("FPS: %.1f", io.Framerate);
 
