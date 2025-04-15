@@ -79,6 +79,7 @@ int main()
 	
 	io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines; // Optional
 	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.BackendFlags &= ~ImGuiBackendFlags_RendererHasVtxOffset; // Avoids slow fallback paths
 	
 	ImGui::StyleColorsDark();
@@ -117,6 +118,7 @@ int main()
 
 		ImGui::NewFrame();
 		ImGui::Begin("Stats");
+		ImGui::DockSpaceOverViewport();
 		//ImGui::Text("Hello from ImGui");
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui::Text("FPS: %.1f", io.Framerate);
