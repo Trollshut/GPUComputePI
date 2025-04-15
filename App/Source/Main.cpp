@@ -83,7 +83,7 @@ int main()
 	
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init(nullptr); // Let it auto-pick
+	ImGui_ImplOpenGL3_Init("#version 300 es"); // GLES 3.0 shader version
 
 	glfwSwapInterval(1);
 
