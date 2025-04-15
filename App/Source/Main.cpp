@@ -7,8 +7,9 @@
 #include "Shader.h"
 #include "Renderer.h"
 
-static const std::filesystem::path s_VertexShaderPath   = "Shaders/Rectangle.vert";
-static const std::filesystem::path s_FragmentShaderPath = "Shaders/Rectangle.frag";
+static const std::filesystem::path s_ShaderDir = "../../App/Shaders";
+static const std::filesystem::path s_VertexShaderPath   = s_ShaderDir / "Rectangle.vert";
+static const std::filesystem::path s_FragmentShaderPath = s_ShaderDir / "Rectangle.frag";
 
 static void ErrorCallback(int error, const char* description)
 {
