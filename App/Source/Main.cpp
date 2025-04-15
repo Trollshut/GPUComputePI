@@ -111,11 +111,8 @@ int main()
 
 		static bool showDemo = true;
 		ImGui::Begin("Settings");
-		ImGui::Checkbox("Show Demo Window", &showDemo);
+		ImGui::Text("Test for rendering information");
 		ImGui::End();
-
-		if (showDemo)
-			ImGui::ShowDemoWindow(&showDemo);
 
 		ImGui::ShowMetricsWindow();
 
