@@ -7,10 +7,10 @@ void Renderer::Initialize()
 {
 	float quadVertices[] = {
 		// Positions   // TexCoords
-		-1.0f, -1.0f,  0.0f, 0.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f,
+		-0.5f, -0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  1.0f, 1.0f,
 	};
 
 	glGenVertexArrays(1, &m_VAO);
