@@ -117,23 +117,16 @@ int main()
 		ImGui_ImplGlfw_NewFrame();
 
 		ImGui::NewFrame();
-		ImGui::Begin("Stats");
-		ImGui::DockSpaceOverViewport();
-		//ImGui::Text("Hello from ImGui");
-		ImGuiIO& io = ImGui::GetIO();
-		ImGui::Text("FPS: %.1f", io.Framerate);
-		ImGui::End();
 
 		ImGui::ShowDemoWindow();
 
 		// Render ImGui
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		
 		glFinish();
-		//auto frameStart = std::chrono::steady_clock::now();
 		glfwSwapBuffers(window);
-		//auto frameEnd = std::chrono::steady_clock::now();
-		//std::this_thread::sleep_until(frameStart + std::chrono::milliseconds(33));
+
 
 	}
 
