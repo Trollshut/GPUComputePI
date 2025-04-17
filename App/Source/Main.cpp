@@ -52,8 +52,8 @@ int main()
 	glfwWindowHint(GLFW_SAMPLES, 0);
 
 
-	int width = 1280;
-	int height = 720;
+	int width = 800;
+	int height = 480;
 
 	GLFWwindow* window = glfwCreateWindow(width, height, "Red Rectangle", nullptr, nullptr);
 	if (!window)
