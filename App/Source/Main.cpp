@@ -99,7 +99,8 @@ int main()
 
 	Renderer renderer;
 	renderer.Initialize();
-
+	InGuiUI ui;
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -118,7 +119,7 @@ int main()
 
 		ImGui::NewFrame();
 
-		ImGui::ShowDemoWindow();
+		ui.Render();
 
 		// Render ImGui
 		ImGui::Render();
