@@ -8,14 +8,15 @@ set(SOURCES
     ${SOURCE_DIR}/Shader.cpp
     ${SOURCE_DIR}/Renderer.h
     ${SOURCE_DIR}/Renderer.cpp
+	${SOURCE_DIR}/ImGuiRenderer/
 )
 
 # Create the executable
 add_executable(App ${SOURCES})
 
 # Link dependencies
-target_link_libraries(App PRIVATE glfw glad glm)
+target_link_libraries(App PRIVATE glfw glad)
 
 # Link EGL and GLESv2 (for Raspberry Pi OpenGL ES 3.0 runtime)
-target_link_libraries(App PRIVATE glfw glad glm imgui imgui_impl)
+target_link_libraries(App PRIVATE glfw glad imgui imgui_impl)
 
