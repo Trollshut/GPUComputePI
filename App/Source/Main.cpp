@@ -11,7 +11,6 @@
 
 #include "Shader.h"
 #include "Renderer.h"
-#include "ImGuiUI.h"
 
 #include <chrono>
 #include <thread>
@@ -99,7 +98,6 @@ int main()
 
 	Renderer renderer;
 	renderer.Initialize();
-	InGuiUI ui;
 	
 	while (!glfwWindowShouldClose(window))
 	{
@@ -119,7 +117,7 @@ int main()
 
 		ImGui::NewFrame();
 
-		ui.Render();
+		ImGui::ShowDemoWindow();
 
 		// Render ImGui
 		ImGui::Render();
