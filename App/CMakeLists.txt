@@ -8,7 +8,7 @@ set(SOURCES
     ${SOURCE_DIR}/Shader.cpp
     ${SOURCE_DIR}/Renderer.h
     ${SOURCE_DIR}/Renderer.cpp
-	${SOURCE_DIR}/ImGuiRenderer/
+	${SOURCE_DIR}/ImGuiRenderer/ImGuiUI.h
 )
 
 # Create the executable
