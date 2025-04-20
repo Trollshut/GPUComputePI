@@ -11,7 +11,7 @@
 
 #include "Shader.h"
 #include "Renderer.h"
-#include "ImGuiRenderer/ImGuiUI.h"
+#include "ImGuiUI.h"
 
 #include <chrono>
 #include <thread>
