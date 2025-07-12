@@ -26,7 +26,7 @@ sudo make install
 ```
 2. install libraries that include opengl and x11 requirements:
 
-sudo apt install libgl1-mesa-dev xorg-dev -y
+```sudo apt install libgl1-mesa-dev xorg-dev -y```
 
 ## Building
 From the main folder run the following commands which will create a folder
